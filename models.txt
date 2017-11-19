@@ -1,0 +1,14 @@
+from django.db import models
+from django.db.models import Sum
+class ProducManager(models.Manager):
+    def dailySales(self):
+        return super(ProducManager,self).get_queryset().annotate(dailySales=aggregate(Sum('mrp')))
+
+# Create your models here.
+class Products(models.Model):
+    productId=models.CharField(max_length=10)
+    productName=models.CharField(max_length=30)
+    productDesc=models.CharField(max_length=300)
+    mrp=models.IntegerField()
+    typeofproduct=models.CharField(max_length=20)
+    sales=ProducManager()
