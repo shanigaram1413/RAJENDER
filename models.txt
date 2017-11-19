@@ -1,9 +1,10 @@
 from django.db import models
-from django.db.models import Sum
-class ProducManager(models.Manager):
+from django.db.models import Sum,Avg,Count
+import datetime
+#Managager class for Products model.
+class ProductManager(models.Manager):
     def dailySales(self):
-        return super(ProducManager,self).get_queryset().annotate(dailySales=aggregate(Sum('mrp')))
-
+        return super(ProducManager,self).get_queryset().values('mrp').filter(mrp__lt=100)
 # Create your models here.
 class Products(models.Model):
     productId=models.CharField(max_length=10)
@@ -11,4 +12,21 @@ class Products(models.Model):
     productDesc=models.CharField(max_length=300)
     mrp=models.IntegerField()
     typeofproduct=models.CharField(max_length=20)
-    sales=ProducManager()
+    sales=ProductManager()
+#create employee manager class
+class EmployeeManager(models.Manager):
+	def employee_details(self):
+		return super(EmployeeManager,self).get_queryset().filter(salary__lte=10000).values('salary','emp_name')
+#create Employee model here.
+
+class Employee(models.Model):
+	gender_choices=(
+	('M',"male"),
+	('F',"female"),
+)
+	emp_name=models.CharField(max_length=20)
+	gender=models.CharField(max_length=6,choices=gender_choices,default="M")
+	dob=models.DateTimeField(auto_now=True)
+	join_date=models.DateTimeField(auto_now=True)
+	salary=models.IntegerField()
+	emp_manager=EmployeeManager()
