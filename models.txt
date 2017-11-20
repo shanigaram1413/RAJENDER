@@ -1,32 +1,56 @@
 from django.db import models
+from django.utils import timezone
 from django.db.models import Sum,Avg,Count
-import datetime
+from datetime import datetime
 #Managager class for Products model.
 class ProductManager(models.Manager):
-    def dailySales(self):
-        return super(ProducManager,self).get_queryset().values('mrp').filter(mrp__lt=100)
+	def productSales(self):
+		return super(ProductManager,self).get_queryset().values('mrp').filter(mrp__lt=100)
+	
 # Create your models here.
 class Products(models.Model):
-    productId=models.CharField(max_length=10)
-    productName=models.CharField(max_length=30)
-    productDesc=models.CharField(max_length=300)
-    mrp=models.IntegerField()
-    typeofproduct=models.CharField(max_length=20)
-    sales=ProductManager()
+	productId=models.CharField(max_length=10)
+	productName=models.CharField(max_length=30)
+	productDesc=models.CharField(max_length=300)
+	mrp=models.IntegerField()
+	mfg=models.DateTimeField(auto_now_add=True)
+	typeofproduct=models.CharField(max_length=20)
+	sales=ProductManager()
 #create employee manager class
 class EmployeeManager(models.Manager):
 	def employee_details(self):
-		return super(EmployeeManager,self).get_queryset().filter(salary__lte=10000).values('salary','emp_name')
-#create Employee model here.
+		return super(EmployeeManager,self).get_queryset().filter(salary__lte=10000).values('emp_name','gender','salary')
+	def emplyee_filter(self):
+		return super(EmployeeManager,self).get_queryset().filter(emailId_endwith=".com")
+	def employee_mobile(self):
+		return super(EmployeeManager,self).get_queryset().filter(mobile_startwith="9")
 
-class Employee(models.Model):
-	gender_choices=(
+gender_choices=(
 	('M',"male"),
 	('F',"female"),
 )
+#create Employee model here.
+class Employee(models.Model):
 	emp_name=models.CharField(max_length=20)
 	gender=models.CharField(max_length=6,choices=gender_choices,default="M")
 	dob=models.DateTimeField(auto_now=True)
 	join_date=models.DateTimeField(auto_now=True)
-	salary=models.IntegerField()
+	salary=models.DecimalField(max_digits=10,decimal_places=2)
+	emailId=models.EmailField(max_length=70,null=True,blank=True,unique=True)
+	mobile=models.IntegerField(null=True)
+	addr=models.CharField(max_length=50,default="hyd")
 	emp_manager=EmployeeManager()
+#create customer manager here.
+class CustomerManager(models.Manager):
+	def cust_details(self):
+		return super(CustomerManager,self).get_queryset().filter(id__gt=5)
+
+#create customer model here.
+class Customer(models.Model):
+	cust_name=models.CharField(max_length=20)
+	gender=models.CharField(max_length=6,choices=gender_choices,default="M")
+	mobile=models.IntegerField(null=True)
+	emilId=models.EmailField(max_length=70,null=True,blank=True,unique=True)
+	dob=models.DateTimeField(auto_now=True)
+	addr=models.CharField(max_length=50,default="hyd")
+	customer_manager=CustomerManager()
