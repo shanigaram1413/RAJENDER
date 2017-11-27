@@ -1,45 +1,62 @@
 from django.db import models
 from django.utils import timezone
-from django.db.models import Sum,Avg,Count
+from django.db.models import Sum,Avg,Count,Max,Min
 from datetime import datetime
+
 #Managager class for Products model.
 class ProductManager(models.Manager):
 	def productSales(self):
-		return super(ProductManager,self).get_queryset().values('mrp').filter(mrp__lt=100)
-	
+		return super(ProductManager,self).get_queryset().values('productName','productDesc','mrp','mfg').filter(mrp__gt=6000)
+	def productSales1(self):
+		return super(ProductManager,self).get_queryset().values('productName','productDesc','mrp','mfg').filter(mrp__gte=6000)
+	def productSales2(self):
+		return super(ProductManager,self).get_queryset().values('productName','productDesc','mrp','mfg').filter(mrp__exact=6000)
+
 # Create your models here.
 class Products(models.Model):
-	productId=models.CharField(max_length=10)
 	productName=models.CharField(max_length=30)
 	productDesc=models.CharField(max_length=300)
 	mrp=models.IntegerField()
-	mfg=models.DateTimeField(auto_now_add=True)
-	typeofproduct=models.CharField(max_length=20)
+	mfg=models.DateField()
 	sales=ProductManager()
+
 #create employee manager class
 class EmployeeManager(models.Manager):
 	def employee_details(self):
 		return super(EmployeeManager,self).get_queryset().filter(salary__lte=10000).values('emp_name','gender','salary')
 	def emplyee_filter(self):
-		return super(EmployeeManager,self).get_queryset().filter(emailId_endwith=".com")
+		return super(EmployeeManager,self).get_queryset().filter(emailId__endswith=".com")
 	def employee_mobile(self):
-		return super(EmployeeManager,self).get_queryset().filter(mobile_startwith="9")
+		return super(EmployeeManager,self).get_queryset().filter(mobile__regex=r'^[6-9]').values('emp_name','mobile')
+	def employee1(self):
+		return super(EmployeeManager,self).get_queryset().aggregate(Avg('salary'))
+	def employee2(self):
+		return super(EmployeeManager,self).get_queryset().aggregate(Max('salary'))
+	def employee3(self):
+		return super(EmployeeManager,self).get_queryset().aggregate(Min('salary'))
+	def employee4(self):
+		return super(EmployeeManager,self).get_queryset().count()
+	def employee5(self):
+		return super(EmployeeManager,self).get_queryset().values('gender').annotate(Count('gender'))
+	
 
 gender_choices=(
 	('M',"male"),
 	('F',"female"),
 )
+
 #create Employee model here.
 class Employee(models.Model):
 	emp_name=models.CharField(max_length=20)
 	gender=models.CharField(max_length=6,choices=gender_choices,default="M")
-	dob=models.DateTimeField(auto_now=True)
-	join_date=models.DateTimeField(auto_now=True)
+	dob=models.DateField()
+	join_date=models.DateField()
 	salary=models.DecimalField(max_digits=10,decimal_places=2)
 	emailId=models.EmailField(max_length=70,null=True,blank=True,unique=True)
 	mobile=models.IntegerField(null=True)
 	addr=models.CharField(max_length=50,default="hyd")
 	emp_manager=EmployeeManager()
+
 #create customer manager here.
 class CustomerManager(models.Manager):
 	def cust_details(self):
