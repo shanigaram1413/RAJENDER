@@ -5,9 +5,23 @@ from django.contrib import admin
 from .models import *
 # register your models here
 class ProductAdmin(admin.ModelAdmin):
-	#fields=['productId','productName','mrp']
-	list_display=('id','productId','productName','mrp')
-	list_filter=('productId',)
+	fields=['productName','mrp']
+	list_display=('id','productName','mrp','productDesc','mfg')
+	list_filter=('productName',)
 	search_fields=['id']
-	ordering=['-productId']
+	ordering=['id']
 admin.site.register(Products,ProductAdmin)
+class EmployeeAdmin(admin.ModelAdmin):
+	fields=['emp_name','mobile','dob','salary']
+	list_display=('emp_name','gender','dob','join_date','salary','emailId','mobile','addr')
+	list_filter=('join_date',)
+	search_fields=['mobile']
+	ordering=['id']
+admin.site.register(Employee,EmployeeAdmin)
+class CustomerAdmin(admin.ModelAdmin):
+	fields=['cust_name','mobile','dob']
+	list_display=('id','cust_name','gender','dob','emailId','mobile','addr')
+	list_filter=('addr',)
+	search_fields=['mobile']
+	ordering=['id']
+admin.site.register(Customer,CustomerAdmin)
