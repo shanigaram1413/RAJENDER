@@ -19,6 +19,13 @@ class Products(models.Model):
 	mrp=models.IntegerField()
 	mfg=models.DateField()
 	sales=ProductManager()
+	def price(self):
+		if self.mrp<=10000:
+			return "high quality product."
+		else:
+			return "low quality product."
+	def __str__(self):
+		return self.productDesc
 
 #create employee manager class
 class EmployeeManager(models.Manager):
@@ -39,7 +46,6 @@ class EmployeeManager(models.Manager):
 	def employee5(self):
 		return super(EmployeeManager,self).get_queryset().values('gender').annotate(Count('gender'))
 	
-
 gender_choices=(
 	('M',"male"),
 	('F',"female"),
@@ -56,7 +62,13 @@ class Employee(models.Model):
 	mobile=models.IntegerField(null=True)
 	addr=models.CharField(max_length=50,default="hyd")
 	emp_manager=EmployeeManager()
-
+	def age(self):
+		now=datetime.now().year
+		m=datetime.now().month
+		d=datetime.now().day
+		if (d-self.dob.day)<1:
+			return (now-self.dob.year),'years',(m-self.dob.month-1),'month',(30-self.dob.day),'days'
+		return (now-self.dob.year),(m-self.dob.month),(d-self.dob.day)
 #create customer manager here.
 class CustomerManager(models.Manager):
 	def cust_details(self):
@@ -67,7 +79,9 @@ class Customer(models.Model):
 	cust_name=models.CharField(max_length=20)
 	gender=models.CharField(max_length=6,choices=gender_choices,default="M")
 	mobile=models.IntegerField(null=True)
-	emilId=models.EmailField(max_length=70,null=True,blank=True,unique=True)
-	dob=models.DateTimeField(auto_now=True)
+	emailId=models.EmailField(max_length=70,null=True,blank=True,unique=True)
+	dob=models.DateField()
 	addr=models.CharField(max_length=50,default="hyd")
 	customer_manager=CustomerManager()
+
+#create model in relationships

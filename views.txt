@@ -1,0 +1,10 @@
+from django.shortcuts import render,HttpResponse
+# Create your views here.
+import datetime
+def date_time(request):
+	now=datetime.datetime.now()
+	html="<h1>It is now: %s</h1><br><h3>Hello rajenderreddy</h3>"%now
+	return HttpResponse(html)
+def wish(request):
+	w="<h1>Hello Good morning</h1>"
+	return HttpResponse(w)

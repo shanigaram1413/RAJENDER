@@ -6,14 +6,14 @@ from .models import *
 # register your models here
 class ProductAdmin(admin.ModelAdmin):
 	fields=['productName','mrp']
-	list_display=('id','productName','mrp','productDesc','mfg')
+	list_display=('id','productName','mrp','productDesc','mfg','price')
 	list_filter=('productName',)
 	search_fields=['id']
 	ordering=['id']
 admin.site.register(Products,ProductAdmin)
 class EmployeeAdmin(admin.ModelAdmin):
 	fields=['emp_name','mobile','dob','salary']
-	list_display=('emp_name','gender','dob','join_date','salary','emailId','mobile','addr')
+	list_display=('emp_name','gender','dob','join_date','salary','mobile','addr','age')
 	list_filter=('join_date',)
 	search_fields=['mobile']
 	ordering=['id']
