@@ -1,9 +1,8 @@
 from django.db import models
-from django.utils import timezone
-from django.db.models import Sum,Avg,Count,Max,Min
 from datetime import datetime
-
-#Managager class for Products model.
+from django.db.models import Sum,Avg,Count,Max,Min
+from django.utils.timezone import *
+#Product managers
 class ProductManager(models.Manager):
 	def productSales(self):
 		return super(ProductManager,self).get_queryset().values('productName','productDesc','mrp','mfg').filter(mrp__gt=6000)
@@ -11,77 +10,75 @@ class ProductManager(models.Manager):
 		return super(ProductManager,self).get_queryset().values('productName','productDesc','mrp','mfg').filter(mrp__gte=6000)
 	def productSales2(self):
 		return super(ProductManager,self).get_queryset().values('productName','productDesc','mrp','mfg').filter(mrp__exact=6000)
-
+	def productSales3(self):
+		return super(ProductManager,self).get_queryset().values('productName','productDesc','mrp','mfg').filter(mrp__lt=6000)
+	def productSales4(self):
+		return super(ProductManager,self).get_queryset().values('productName','productDesc','mrp','mfg').filter(mrp__lte=9000)
 # Create your models here.
+gender=(('M','Male'),
+		('F','Female'),
+		)
 class Products(models.Model):
+	productId=models.CharField(max_length=10,unique=True)
 	productName=models.CharField(max_length=30)
-	productDesc=models.CharField(max_length=300)
+	productDesc=models.CharField(max_length=100)
 	mrp=models.IntegerField()
 	mfg=models.DateField()
-	sales=ProductManager()
+	type=models.CharField(max_length=30,default='general needs')
+	product_manager=ProductManager()
 	def price(self):
-		if self.mrp<=10000:
+		if self.mrp>=10000:
 			return "high quality product."
 		else:
 			return "low quality product."
 	def __str__(self):
-		return self.productDesc
+		return self.productName
+#customer manager create here
+class CustomerManager(models.Manager):
+	def details(self):
+		return super(CustomerManager,self).get_queryset().values('cust_name','gender','mobile','dob','emailId','address').filter(id__lte=5)
 
-#create employee manager class
+#customer model create here
+class Customer(models.Model):
+	cust_name=models.CharField(max_length=30)
+	dob=models.DateField()
+	gender=models.CharField(max_length=2,choices=gender,default='M')
+	mobile=models.IntegerField(unique=True)
+	emailId=models.EmailField(max_length=50,unique=True,null=True,blank=True)
+	address=models.CharField(max_length=100)
+	cust_manager=CustomerManager()
+	def wish(self):
+		m=datetime.now().month
+		d=datetime.now().day
+		if (self.dob.month==m)and(self.dob.day==d):
+			return "Wish you many more happy return of the day."
 class EmployeeManager(models.Manager):
-	def employee_details(self):
-		return super(EmployeeManager,self).get_queryset().filter(salary__lte=10000).values('emp_name','gender','salary')
-	def emplyee_filter(self):
-		return super(EmployeeManager,self).get_queryset().filter(emailId__endswith=".com")
-	def employee_mobile(self):
-		return super(EmployeeManager,self).get_queryset().filter(mobile__regex=r'^[6-9]').values('emp_name','mobile')
-	def employee1(self):
-		return super(EmployeeManager,self).get_queryset().aggregate(Avg('salary'))
-	def employee2(self):
-		return super(EmployeeManager,self).get_queryset().aggregate(Max('salary'))
-	def employee3(self):
-		return super(EmployeeManager,self).get_queryset().aggregate(Min('salary'))
-	def employee4(self):
-		return super(EmployeeManager,self).get_queryset().count()
-	def employee5(self):
-		return super(EmployeeManager,self).get_queryset().values('gender').annotate(Count('gender'))
-	
-gender_choices=(
-	('M',"male"),
-	('F',"female"),
-)
-
-#create Employee model here.
+	def details(self):
+		return super(EmployeeManager,self).get_queryset().filter(salary__gte=10000).values('name','gender','salary')
 class Employee(models.Model):
-	emp_name=models.CharField(max_length=20)
-	gender=models.CharField(max_length=6,choices=gender_choices,default="M")
+	name=models.CharField(max_length=30)
+	gender=models.CharField(max_length=2,choices=gender,default='M')
+	address=models.CharField(max_length=100)
+	mobile=models.IntegerField(unique=True)
+	emailId=models.EmailField(max_length=50,unique=True,null=True,blank=True)
+	salary=models.IntegerField()
 	dob=models.DateField()
 	join_date=models.DateField()
-	salary=models.DecimalField(max_digits=10,decimal_places=2)
-	emailId=models.EmailField(max_length=70,null=True,blank=True,unique=True)
-	mobile=models.IntegerField(null=True)
-	addr=models.CharField(max_length=50,default="hyd")
 	emp_manager=EmployeeManager()
 	def age(self):
 		now=datetime.now().year
 		m=datetime.now().month
 		d=datetime.now().day
 		if (d-self.dob.day)<1:
-			return (now-self.dob.year),'years',(m-self.dob.month-1),'month',(30-self.dob.day),'days'
+			return (now-self.dob.year),'-',(m-self.dob.month-1),'-',(30-self.dob.day)
 		return (now-self.dob.year),(m-self.dob.month),(d-self.dob.day)
-#create customer manager here.
-class CustomerManager(models.Manager):
-	def cust_details(self):
-		return super(CustomerManager,self).get_queryset().filter(id__gt=5)
-
-#create customer model here.
-class Customer(models.Model):
-	cust_name=models.CharField(max_length=20)
-	gender=models.CharField(max_length=6,choices=gender_choices,default="M")
-	mobile=models.IntegerField(null=True)
-	emailId=models.EmailField(max_length=70,null=True,blank=True,unique=True)
-	dob=models.DateField()
-	addr=models.CharField(max_length=50,default="hyd")
-	customer_manager=CustomerManager()
-
-#create model in relationships
+	def wish(self):
+		m=datetime.now().month
+		d=datetime.now().day
+		if (self.dob.month==m)and(self.dob.day==d):
+			return "Wish you many more happy return of the day."
+#relationships
+class Orders(models.Model):
+	products=models.ForeignKey(Products,on_delete=models.CASCADE)
+	purchage=models.DateField(auto_now=True)
+	customer=models.ForeignKey(Customer,on_delete=models.CASCADE)

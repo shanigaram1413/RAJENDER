@@ -1,27 +1,29 @@
 from django.contrib import admin
-
+from . models import *
+def update_row(modeladmin,request,queryset):
+	queryset.update(gender='M')
+	update_row.short_description = "updated male to Female"
 # Register your models here.
-#from future_import unicode_literals
-from .models import *
-# register your models here
 class ProductAdmin(admin.ModelAdmin):
-	fields=['productName','mrp']
-	list_display=('id','productName','mrp','productDesc','mfg','price')
-	list_filter=('productName',)
+	fields=['productId','productName','productDesc','mrp','mfg','type']
+	list_display=('id','mrp','productDesc','mfg','price')
+	list_filter=('type',)
 	search_fields=['id']
 	ordering=['id']
 admin.site.register(Products,ProductAdmin)
 class EmployeeAdmin(admin.ModelAdmin):
-	fields=['emp_name','mobile','dob','salary']
-	list_display=('emp_name','gender','dob','join_date','salary','mobile','addr','age')
-	list_filter=('join_date',)
+	fields=['name','mobile','dob','salary','join_date']
+	list_display=('name','gender','dob','join_date','salary','mobile','address','age','wish')
+	list_filter=('dob',)
 	search_fields=['mobile']
 	ordering=['id']
+	
 admin.site.register(Employee,EmployeeAdmin)
 class CustomerAdmin(admin.ModelAdmin):
-	fields=['cust_name','mobile','dob']
-	list_display=('id','cust_name','gender','dob','emailId','mobile','addr')
-	list_filter=('addr',)
+	fields=['cust_name','mobile','dob','gender','address']
+	list_display=('id','cust_name','gender','dob','emailId','mobile','address')
+	list_filter=('address',)
 	search_fields=['mobile']
 	ordering=['id']
+	actions=[update_row]
 admin.site.register(Customer,CustomerAdmin)
