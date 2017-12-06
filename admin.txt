@@ -1,8 +1,11 @@
 from django.contrib import admin
 from . models import *
-def update_row(modeladmin,request,queryset):
+def update_f2m(modeladmin,request,queryset):
 	queryset.update(gender='M')
-	update_row.short_description = "updated male to Female"
+	update_f2m.short_description = "updated female to male"
+def update_m2f(modeladmin,request,queryset):
+	queryset.update(gender='F')
+	update_m2f.short_description = "updated male to female"
 # Register your models here.
 class ProductAdmin(admin.ModelAdmin):
 	fields=['productId','productName','productDesc','mrp','mfg','type']
@@ -13,7 +16,7 @@ class ProductAdmin(admin.ModelAdmin):
 admin.site.register(Products,ProductAdmin)
 class EmployeeAdmin(admin.ModelAdmin):
 	fields=['name','mobile','dob','salary','join_date']
-	list_display=('name','gender','dob','join_date','salary','mobile','address','age','wish')
+	list_display=('name','gender','dob','join_date','salary','mobile','address','age','wish','level')
 	list_filter=('dob',)
 	search_fields=['mobile']
 	ordering=['id']
@@ -25,5 +28,8 @@ class CustomerAdmin(admin.ModelAdmin):
 	list_filter=('address',)
 	search_fields=['mobile']
 	ordering=['id']
-	actions=[update_row]
+	actions=[update_f2m,update_m2f]
 admin.site.register(Customer,CustomerAdmin)
+class orderAdmin(admin.ModelAdmin):
+	list_display=['products','customer','purchage','good']
+admin.site.register(Orders,orderAdmin)

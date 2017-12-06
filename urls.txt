@@ -8,6 +8,7 @@ urlpatterns = [
 	url(r'^product/',views.products),
 	url(r'^home/',views.renderview),
 	url(r'^wish/',views.birthday),
-	url(r'^index/',views.render_response)
-
+	url(r'^index/',views.render_response),
+	url(r'^http/',views.http_response),
+	url(r'^customer/',views.customer),
 ]

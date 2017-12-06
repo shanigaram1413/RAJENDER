@@ -1,5 +1,7 @@
-from django.shortcuts import render,HttpResponse,render_to_response
+from django.shortcuts import render,render_to_response
+from django.http import HttpResponse,HttpResponseNotFound,Http404
 from target.operations.models import *
+from datetime import *
 
 # Create your views here.
 def wish(request):
@@ -13,6 +15,9 @@ def renderview(request):
 #use render_to_response 
 def render_response(request):
 	return render_to_response("index.html")
+#Http codes
+def http_response(request):
+	return HttpResponseNotFound("This url is not corect please use valid url")
 # user defined functions
 def products(request):
 	m=Products.product_manager.all()
@@ -26,10 +31,11 @@ def products(request):
 		row=row+"<td>"+str(each.mrp)+"</td>"
 		row=row+"<td>"+str(each.mfg)+"</td>"
 		row=row+"</tr>"
-	h=output+row+"</table>"
-	return HttpResponse(h)
+	p=output+row+"</table>"
+	return HttpResponse(p)
+
 def birthday(request):
-	m=Employee.emp_manager.all().filter(dob__exact=datetime.now())
+	m=Employee.emp_manager.all().filter(dob__day=datetime.now().day).filter(dob__month=datetime.now().month)
 	output="<table border=1><th>Name</th><th>DOB</th><th>WISH</th>"
 	row=""
 	for each in m:
@@ -37,6 +43,23 @@ def birthday(request):
 		row=row+"<td>"+each.name+"</td>"
 		row=row+"<td>"+str(each.dob)+"</td>"
 		row=row+"<td>"+str(each.wish())+"</td>"
+		row=row+"<td>"+str(each.age())+"</td>"
 		row=row+"</tr>"
-	y=output+row+"</table>"
-	return HttpResponse(y)
+	b=output+row+"</table>"
+	return HttpResponse(b)
+
+def customer(self):
+	c=Customer.cust_manager.all()
+	output="<table border='1',align='right'><th>CUSTOMER NAME</th><th>GENDER</th><th>DOB</th><th>Mobile No</th><th>EMAIL ID</th><th>ADDRESS</th>"
+	row=""
+	for each in c:
+		row=row+"<tr>"
+		row=row+"<td>"+each.cust_name+"</td>"
+		row=row+"<td>"+each.gender+"</td>"
+		row=row+"<td>"+str(each.dob)+"</td>"
+		row=row+"<td>"+str(each.mobile)+"</td>"
+		row=row+"<td>"+str(each.emailId)+"</td>"
+		row=row+"<td>"+each.address+"</td>"
+		row=row+"</tr>"
+	c=output+row+"</table>"
+	return HttpResponse(c)
